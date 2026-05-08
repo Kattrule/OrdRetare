@@ -40,51 +40,57 @@
         button {
             width: 100%;
             padding: 12px;
-            background-color: #007bff;
+            background-color: #10a37f;
             color: white;
             border: none;
             border-radius: 6px;
-            font-size: 1rem;
+            font-size: 1.1rem;
+            font-weight: bold;
             cursor: pointer;
             transition: background 0.2s;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #0d8a6b;
         }
         #result {
-            margin-top: 20px;
+            margin-top: 25px;
             text-align: center;
-            font-size: 1.5rem;
+            font-size: 2rem;
             letter-spacing: 5px;
+            min-height: 40px;
         }
         .legend {
-            margin-top: 20px;
-            font-size: 0.85rem;
-            color: #555;
-            background: #eee;
-            padding: 10px;
-            border-radius: 6px;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #444;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+        .legend p {
+            margin: 5px 0;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Wordle-rättaren</h2>
+    <h2 style="text-align: center; margin-top: 0;">Egna Wordle-rättaren</h2>
     
     <div class="input-group">
-        <label>Antal bokstäver:</label>
+        <label for="lengthInput">Hur många bokstäver har ordet?</label>
         <input type="number" id="lengthInput" value="5" min="1">
     </div>
 
     <div class="input-group">
-        <label>Rätt ord:</label>
-        <input type="text" id="targetWord" placeholder="Skriv facit...">
+        <label for="targetWord">Rätt ord (facit):</label>
+        <input type="text" id="targetWord" placeholder="Skriv in rätt ord...">
     </div>
 
     <div class="input-group">
-        <label>Gissning:</label>
-        <input type="text" id="guessWord" placeholder="Skriv din gissning...">
+        <label for="guessWord">Gissning:</label>
+        <input type="text" id="guessWord" placeholder="Skriv in gissningen...">
     </div>
 
     <button onclick="checkWord()">Rätta ordet</button>
@@ -92,59 +98,62 @@
     <div id="result"></div>
 
     <div class="legend">
-        <strong>Förklaring:</strong><br>
-        🟢 Rätt bokstav, rätt plats<br>
-        🟡 Finns i ordet, fel plats<br>
-        🔴 Finns inte i ordet<br>
-        🟣 Gissningen var för lång<br>
-        🔵 Bokstav saknas i gissningen
+        <strong>Förklaring:</strong>
+        <p>🟢 Rätt bokstav på rätt plats</p>
+        <p>🟡 Bokstaven finns i ordet (men fel plats)</p>
+        <p>🔴 Bokstaven finns inte i ordet</p>
+        <p>🟣 Gissningen har för många bokstäver (extra)</p>
+        <p>🔵 Gissningen har för få bokstäver (saknas)</p>
     </div>
 </div>
 
 <script>
 function checkWord() {
+    // Hämtar värdena och gör dem till små bokstäver för att underlätta jämförelsen
+    const length = parseInt(document.getElementById('lengthInput').value);
     const target = document.getElementById('targetWord').value.toLowerCase().trim();
     const guess = document.getElementById('guessWord').value.toLowerCase().trim();
-    const length = parseInt(document.getElementById('lengthInput').value);
     const resultDiv = document.getElementById('result');
     
     let feedback = "";
 
-    // Vi loopar igenom det förväntade antalet bokstäver
+    // Går igenom gissningen upp till den bestämda längden på ordet
     for (let i = 0; i < length; i++) {
-        const targetChar = target[i];
-        const guessChar = guess[i];
-
-        // 1. Om gissningen saknar en bokstav på denna position (för kort)
+        // Om gissningen är kortare än ordets tänkta längd
         if (i >= guess.length) {
             feedback += "🔵";
         } 
-        // 2. Om gissningen har en bokstav men facit är slut (för lång)
-        // (Detta täcks egentligen av loopen nedanför om vi vill visa ALLA extra bokstäver)
-        else if (i >= target.length) {
-            feedback += "🟣";
-        }
-        // 3. Rätt bokstav på rätt plats
-        else if (guessChar === targetChar) {
-            feedback += "🟢";
-        }
-        // 4. Bokstaven finns i ordet men på fel plats
-        else if (target.includes(guessChar)) {
-            feedback += "🟡";
-        }
-        // 5. Bokstaven finns inte alls
         else {
-            feedback += "🔴";
+            const guessChar = guess[i];
+            
+            // Om rätt ord är ifyllt och vi inte har passerat dess slut
+            if (i < target.length) {
+                const targetChar = target[i];
+                
+                if (guessChar === targetChar) {
+                    feedback += "🟢"; // Rätt plats
+                } 
+                else if (target.includes(guessChar)) {
+                    feedback += "🟡"; // Fel plats, men finns
+                } 
+                else {
+                    feedback += "🔴"; // Finns inte alls
+                }
+            } else {
+                // Säkerhetskoll om facit var kortare än den valda längden
+                feedback += "🔴"; 
+            }
         }
     }
 
-    // Om gissningen är längre än det inställda antalet bokstäver (Extra 🟣)
+    // Om gissningen har FÖR MÅNGA bokstäver jämfört med den valda längden
     if (guess.length > length) {
         for (let j = length; j < guess.length; j++) {
             feedback += "🟣";
         }
     }
 
+    // Skriver ut resultatet på skärmen
     resultDiv.innerHTML = feedback;
 }
 </script>

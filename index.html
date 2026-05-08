@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wordle Rättningsverktyg</title>
+    <title>Wordle Rättningsverktyg - Mörkt Läge</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -11,13 +11,14 @@
             flex-direction: column;
             align-items: center;
             padding: 20px;
-            background-color: #f0f2f5;
+            background-color: #121212; /* Mörk bakgrund för hela sidan */
+            color: #e0e0e0; /* Ljusgrå text */
         }
         .container {
-            background: white;
+            background: #1e1e1e; /* Mörkgrå ruta */
             padding: 2rem;
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); /* Lite starkare skugga för mörkt läge */
             max-width: 400px;
             width: 100%;
         }
@@ -28,14 +29,21 @@
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
+            color: #ffffff;
         }
         input {
             width: 100%;
             padding: 10px;
-            border: 2px solid #ddd;
+            background-color: #2c2c2c; /* Mörkare inmatningsfält */
+            color: #ffffff; /* Vit text i inmatningsfältet */
+            border: 2px solid #444; /* Mörkgrå ram */
             border-radius: 6px;
             box-sizing: border-box;
             font-size: 1rem;
+        }
+        input:focus {
+            border-color: #10a37f; /* Grön ram när man klickar i fältet */
+            outline: none;
         }
         button {
             width: 100%;
@@ -62,11 +70,11 @@
         .legend {
             margin-top: 30px;
             font-size: 0.9rem;
-            color: #444;
-            background: #f9f9f9;
+            color: #bbb; /* Ljusare grå text för förklaringen */
+            background: #2a2a2a; /* Mörk bakgrund för förklaringen */
             padding: 15px;
             border-radius: 8px;
-            border: 1px solid #eee;
+            border: 1px solid #444;
         }
         .legend p {
             margin: 5px 0;
@@ -76,7 +84,7 @@
 <body>
 
 <div class="container">
-    <h2 style="text-align: center; margin-top: 0;">Egna Wordle-rättaren</h2>
+    <h2 style="text-align: center; margin-top: 0; color: #ffffff;">Egna Wordle-rättaren</h2>
     
     <div class="input-group">
         <label for="lengthInput">Hur många bokstäver har ordet?</label>
@@ -98,7 +106,7 @@
     <div id="result"></div>
 
     <div class="legend">
-        <strong>Förklaring:</strong>
+        <strong style="color: #fff;">Förklaring:</strong>
         <p>🟢 Rätt bokstav på rätt plats</p>
         <p>🟡 Bokstaven finns i ordet (men fel plats)</p>
         <p>🔴 Bokstaven finns inte i ordet</p>
@@ -109,7 +117,6 @@
 
 <script>
 function checkWord() {
-    // Hämtar värdena och gör dem till små bokstäver för att underlätta jämförelsen
     const length = parseInt(document.getElementById('lengthInput').value);
     const target = document.getElementById('targetWord').value.toLowerCase().trim();
     const guess = document.getElementById('guessWord').value.toLowerCase().trim();
@@ -117,43 +124,37 @@ function checkWord() {
     
     let feedback = "";
 
-    // Går igenom gissningen upp till den bestämda längden på ordet
     for (let i = 0; i < length; i++) {
-        // Om gissningen är kortare än ordets tänkta längd
         if (i >= guess.length) {
             feedback += "🔵";
         } 
         else {
             const guessChar = guess[i];
             
-            // Om rätt ord är ifyllt och vi inte har passerat dess slut
             if (i < target.length) {
                 const targetChar = target[i];
                 
                 if (guessChar === targetChar) {
-                    feedback += "🟢"; // Rätt plats
+                    feedback += "🟢"; 
                 } 
                 else if (target.includes(guessChar)) {
-                    feedback += "🟡"; // Fel plats, men finns
+                    feedback += "🟡"; 
                 } 
                 else {
-                    feedback += "🔴"; // Finns inte alls
+                    feedback += "🔴"; 
                 }
             } else {
-                // Säkerhetskoll om facit var kortare än den valda längden
                 feedback += "🔴"; 
             }
         }
     }
 
-    // Om gissningen har FÖR MÅNGA bokstäver jämfört med den valda längden
     if (guess.length > length) {
         for (let j = length; j < guess.length; j++) {
             feedback += "🟣";
         }
     }
 
-    // Skriver ut resultatet på skärmen
     resultDiv.innerHTML = feedback;
 }
 </script>

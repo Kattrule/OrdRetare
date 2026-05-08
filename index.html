@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wordle Rättningsverktyg - Mörkt Läge</title>
+    <title>OrdRättare</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -84,15 +84,15 @@
 <body>
 
 <div class="container">
-    <h2 style="text-align: center; margin-top: 0; color: #ffffff;">Egna Wordle-rättaren</h2>
+    <h2 style="text-align: center; margin-top: 0; color: #ffffff;">OrdRättare</h2>
     
     <div class="input-group">
-        <label for="lengthInput">Hur många bokstäver har ordet?</label>
+        <label for="lengthInput">MengdBokstäver</label>
         <input type="number" id="lengthInput" value="5" min="1">
     </div>
 
     <div class="input-group">
-        <label for="targetWord">Rätt ord (facit):</label>
+        <label for="targetWord">Rätt ord:</label>
         <input type="text" id="targetWord" placeholder="Skriv in rätt ord...">
     </div>
 
@@ -106,7 +106,7 @@
     <div id="result"></div>
 
     <div class="legend">
-        <strong style="color: #fff;">Förklaring:</strong>
+        <strong style="color: #fff;">Färger:</strong>
         <p>🟢 Rätt bokstav på rätt plats</p>
         <p>🟡 Bokstaven finns i ordet (men fel plats)</p>
         <p>🔴 Bokstaven finns inte i ordet</p>

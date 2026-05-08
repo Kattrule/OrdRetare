@@ -3,132 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wordle-Rättare</title>
+    <title>Wordle Rättningsverktyg</title>
     <style>
-        :root {
-            --bg: #0f172a;
-            --panel: #1e293b;
-            --accent: #38bdf8;
-            --text: #f8fafc;
-            --green: #22c55e;
-            --yellow: #eab308;
-            --red: #ef4444;
-            --purple: #a855f7;
-            --blue: #3b82f6;
-        }
-
         body {
-            margin: 0;
-            padding: 20px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
+            padding: 20px;
+            background-color: #f0f2f5;
         }
-
         .container {
-            background-color: var(--panel);
-            padding: 30px;
+            background: white;
+            padding: 2rem;
             border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-            width: 100%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             max-width: 400px;
-            border: 1px solid #334155;
+            width: 100%;
         }
-
-        h1 {
-            text-align: center;
-            color: var(--accent);
-            margin-top: 0;
-            font-size: 1.8rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
-
         label {
             display: block;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
+            margin-bottom: 5px;
             font-weight: bold;
-            color: #cbd5e1;
         }
-
         input {
             width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #475569;
-            background-color: var(--bg);
-            color: white;
-            font-size: 1rem;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
             box-sizing: border-box;
-            text-transform: uppercase;
+            font-size: 1rem;
         }
-
-        input:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
         button {
             width: 100%;
-            background-color: var(--accent);
-            color: #020617;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
             border: none;
-            padding: 15px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border-radius: 8px;
+            border-radius: 6px;
+            font-size: 1rem;
             cursor: pointer;
-            text-transform: uppercase;
-            transition: 0.2s;
+            transition: background 0.2s;
         }
-
         button:hover {
-            background-color: #0ea5e9;
-            transform: translateY(-2px);
+            background-color: #0056b3;
         }
-
-        .result-box {
-            margin-top: 30px;
-            background-color: var(--bg);
-            padding: 20px;
-            border-radius: 8px;
+        #result {
+            margin-top: 20px;
             text-align: center;
-            border: 1px dashed #475569;
-            min-height: 50px;
+            font-size: 1.5rem;
+            letter-spacing: 5px;
         }
-
-        #emoji-output {
-            font-size: 2.5rem;
-            letter-spacing: 8px;
-        }
-
         .legend {
-            margin-top: 30px;
+            margin-top: 20px;
             font-size: 0.85rem;
-            color: #94a3b8;
-            background: rgba(0,0,0,0.2);
-            padding: 15px;
-            border-radius: 8px;
-        }
-
-        .legend div {
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            color: #555;
+            background: #eee;
+            padding: 10px;
+            border-radius: 6px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Wordle Rättare</h1>
+<div class="container">
+    <h2>Wordle-rättaren</h2>
+    
+    <div class="input-group">
+        <label>Antal bokstäver:</label>
+        <input type="number" id="lengthInput" value="5" min="1">
+    </div>
+
+    <div class="input-group">
+        <label>Rätt ord:</label>
+        <input type="text" id="targetWord" placeholder="Skriv facit...">
+    </div>
+
+    <div class="input-group">
+        <label>Gissning:</label>
+        <input type="text" id="guessWord" placeholder="Skriv din gissning...">
+    </div>
+
+    <button onclick="checkWord()">Rätta ordet</button>
+
+    <div id="result"></div>
+
+    <div class="legend">
+        <strong>Förklaring:</strong><br>
+        🟢 Rätt bokstav, rätt plats<br>
+        🟡 Finns i ordet, fel plats<br>
+        🔴 Finns inte i ordet<br>
+        🟣 Gissningen var för lång<br>
+        🔵 Bokstav saknas i gissningen
+    </div>
+</div>
+
+<script>
+function checkWord() {
+    const target = document.getElementById('targetWord').value.toLowerCase().trim();
+    const guess = document.getElementById('guessWord').value.toLowerCase().trim();
+    const length = parseInt(document.getElementById('lengthInput').value);
+    const resultDiv = document.getElementById('result');
+    
+    let feedback = "";
+
+    // Vi loopar igenom det förväntade antalet bokstäver
+    for (let i = 0; i < length; i++) {
+        const targetChar = target[i];
+        const guessChar = guess[i];
+
+        // 1. Om gissningen saknar en bokstav på denna position (för kort)
+        if (i >= guess.length) {
+            feedback += "🔵";
+        } 
+        // 2. Om gissningen har en bokstav men facit är slut (för lång)
+        // (Detta täcks egentligen av loopen nedanför om vi vill visa ALLA extra bokstäver)
+        else if (i >= target.length) {
+            feedback += "🟣";
+        }
+        // 3. Rätt bokstav på rätt plats
+        else if (guessChar === targetChar) {
+            feedback += "🟢";
+        }
+        // 4. Bokstaven finns i ordet men på fel plats
+        else if (target.includes(guessChar)) {
+            feedback += "🟡";
+        }
+        // 5. Bokstaven finns inte alls
+        else {
+            feedback += "🔴";
+        }
+    }
+
+    // Om gissningen är längre än det inställda antalet bokstäver (Extra 🟣)
+    if (guess.length > length) {
+        for (let j = length; j < guess.length; j++) {
+            feedback += "🟣";
+        }
+    }
+
+    resultDiv.innerHTML = feedback;
+}
+</script>
+
+</body>
+</html>
